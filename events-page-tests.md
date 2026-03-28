@@ -3,7 +3,6 @@
 ## **TC-1: Перевірка фільтрації подій за типом**
 **Title (Summary):** Verify that the system correctly filters and displays only events with "Online" type  
 **Priority:** High  
-**Test Case ID:** 1  
 **Pre-Conditions:**
 1. Користувач не авторизований.
 2. Сторінка **Events** відкрита.
