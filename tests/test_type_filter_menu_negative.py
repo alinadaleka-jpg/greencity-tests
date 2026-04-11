@@ -17,21 +17,16 @@ class TestGreenCityEvents(unittest.TestCase):
         Перевірка, що меню фільтрації закривається
         після повторного натискання на кнопку.
         """
-        # 1. Знаходимо кнопку за вашим ID
         filter_button = self.wait.until(
             EC.element_to_be_clickable((By.ID, "mat-select-6"))
         )
 
-        # Відкриваємо меню
         filter_button.click()
 
-        # Чекаємо на появу панелі
         self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".mat-mdc-select-panel")))
 
-        # Клікаємо вдруге
         filter_button.click()
 
-        # Перевіряємо, що панель стала невидимою
         is_closed = self.wait.until(
             EC.invisibility_of_element_located((By.CSS_SELECTOR, ".mat-mdc-select-panel"))
         )
