@@ -1,46 +1,92 @@
+# import unittest
+#
+# from pages.events_page import EventsPage
+# from tests.driver_factory import make_driver
+#
+#
+# class TestFilterByEconomicType(unittest.TestCase):
+#     """
+#     TC-2 Positive:
+#     Selecting 'Економічний' from the event-type filter must:
+#       1. Show an applied filter chip labelled 'Економічний'
+#       2. Show the results counter containing 'Знайдено'
+#     """
+#
+#     def setUp(self):
+#         self.driver = make_driver()
+#         self.events = EventsPage(self.driver)
+#         self.events.open_events()
+#
+#     def test_filter_by_economic_type(self):
+#         """TC-2: Перевірка фільтрації подій за типом 'Економічний'"""
+#
+#         # Step 1 – open the type-filter dropdown
+#         self.events.open_type_filter()
+#
+#         # Step 2 – select 'Економічний'
+#         self.events.select_option(EventsPage.OPTION_ECONOMIC)
+#
+#         # Step 3 – verify filter chip appears
+#         chip = self.events.get_filter_chip("Економічний")
+#         self.assertTrue(
+#             chip.is_displayed(),
+#             "Filter chip 'Економічний' did not appear after selection.",
+#         )
+#
+#         # Step 4 – verify results counter is shown
+#         counter = self.events.get_results_counter()
+#         self.assertIn(
+#             "Знайдено",
+#             counter.text,
+#             f"Expected 'Знайдено' in results counter, got: '{counter.text}'",
+#         )
+#
+#     def tearDown(self):
+#         if self.driver:
+#             self.driver.quit()
+#
+#
+# if __name__ == "__main__":
+#     unittest.main()
+
+
 import unittest
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from tests.base_test import BaseTest
+from pages.events_page import EventsPage
 
 
-class TestGreenCityEventsFilter(unittest.TestCase):
+class TestTC2FilterByEconomicType(BaseTest):
 
-    def setUp(self):
-        self.driver = webdriver.Chrome()
-        self.driver.maximize_window()
-        self.driver.get("https://www.greencity.cx.ua/#/greenCity/events")
-        self.wait = WebDriverWait(self.driver, 10)
+    def test_positive_chip_appears_after_selecting_economic(self):
+        """TC-2 Positive: чіп 'Економічний' з'являється після вибору фільтру."""
+        self.page.open_type_filter()
+        self.page.select_option(EventsPage.OPTION_ECONOMIC)
 
-    def test_tc2_filter_by_economic_type(self):
-        """
-        TC-2: Перевірка вибору категорії фільтрації 'Економічний'
-        """
-        filter_button = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'filter-container')]//mat-select"))
-        )
-        filter_button.click()
-
-        economic_option = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//mat-option//span[contains(text(), 'Економічний')]"))
-        )
-        economic_option.click()
-
-        applied_filter_tag = self.wait.until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//div[contains(@class, 'mat-mdc-chip-chip')]//span[contains(text(), 'Економічний')]"))
+        self.assertTrue(
+            self.page.is_filter_chip_visible("Економічний"),
+            "Чіп фільтру 'Економічний' не з'явився після вибору.",
         )
 
-        self.assertTrue(applied_filter_tag.is_displayed(),
-                        "Фільтр 'Економічний' не був застосований або тег не з'явився.")
+    def test_positive_results_counter_shown_after_economic_filter(self):
+        """TC-2 Positive: лічильник результатів відображається після фільтрації."""
+        self.page.open_type_filter()
+        self.page.select_option(EventsPage.OPTION_ECONOMIC)
 
-        results_text = self.driver.find_element(By.CLASS_NAME, "count").text
-        self.assertIn("Знайдено", results_text)
+        self.assertIn(
+            "Знайдено",
+            self.page.get_results_counter_text(),
+            "Лічильник 'Знайдено' не відображається після застосування фільтру.",
+        )
 
-    def tearDown(self):
-        if self.driver:
-            self.driver.quit()
+    def test_negative_economic_not_selected_by_default(self):
+        """TC-2 Negative: 'Економічний' не обраний за замовчуванням."""
+        self.page.open_type_filter()
+
+        self.assertFalse(
+            self.page.is_option_selected(EventsPage.OPTION_ECONOMIC),
+            "Опція 'Економічний' помічена як вибрана за замовчуванням.",
+        )
+        self.page.escape_dropdown()
 
 
 if __name__ == "__main__":
